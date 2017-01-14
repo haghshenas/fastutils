@@ -26,6 +26,7 @@ void printHelp_stat()
 	cerr << "More options:" << endl;
 	cerr << "         -m INT        min read length [0]" << endl;
 	cerr << "         -M INT        max read length [LLONG_MAX]" << endl;
+	cerr << "         -v            print version and build date" << endl;
 	cerr << "         -h            print this help" << endl;
 	cerr << endl;
 }
@@ -40,11 +41,12 @@ int parseCommandLine_stat(int argc, char *argv[])
 		{"out",         required_argument,      0,      'o' },
 		{"minLen",      required_argument,      0,      'm' },
 		{"maxLen",      required_argument,      0,      'M' },
+		{"version",     no_argument,            0,      'v' },
 		{"help",        no_argument,            0,      'h' },
 		{0,0,0,0}
 	};
 
-	while ( (c = getopt_long ( argc, argv, "i:o:m:M:h", longOptions, &index))!= -1 )
+	while ( (c = getopt_long ( argc, argv, "i:o:m:M:vh", longOptions, &index))!= -1 )
 	{
 		switch (c)
 		{
@@ -63,6 +65,13 @@ int parseCommandLine_stat(int argc, char *argv[])
 			case 'h':
 				printHelp_stat();
 				exit(EXIT_SUCCESS);
+				break;
+			case 'v':
+				cerr << endl;
+				cerr << "fastutils Version " << FASTUTILS_VERSION << endl;
+				cerr << endl;
+				exit(EXIT_SUCCESS);
+				break;
 			default:
 				cerr << "[ERROR] please run fastutils stat -h to see the help." << endl << endl;
 				return 0;
