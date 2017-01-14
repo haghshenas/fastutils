@@ -24,8 +24,8 @@ void printHelp_stat()
 	cerr << "         -o STR        output file [stdout]" << endl;
 	cerr << endl;
 	cerr << "More options:" << endl;
-	// cerr << "         -m INT        min read length [0]" << endl;
-	// cerr << "         -M INT        max read length [LLONG_MAX]" << endl;
+	cerr << "         -m INT        min read length [0]" << endl;
+	cerr << "         -M INT        max read length [LLONG_MAX]" << endl;
 	cerr << "         -h            print this help" << endl;
 	cerr << endl;
 }
@@ -155,11 +155,14 @@ int program_stat(int argc, char* argv[])
 	kseq_t *seq = kseq_init(fp);
 	while (kseq_read(seq) >= 0)
 	{
-		num++;
-		sLen += seq->seq.l;
-		for(i=0; i<seq->seq.l; i++)
+		if(seq->seq.l >= _stat_min_len && seq->seq.l <= _stat_max_len)
 		{
-			cnt[ seq->seq.s[i] ]++;
+			num++;
+			sLen += seq->seq.l;
+			for(i=0; i<seq->seq.l; i++)
+			{
+				cnt[ seq->seq.s[i] ]++;
+			}	
 		}
 	}
 	kseq_destroy(seq);
