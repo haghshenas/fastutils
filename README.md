@@ -1,2 +1,2 @@
 # fastutils
-A set of small tools for parsing, manipulating and analysis of FASTA/FASTQ files
+A toolkit for parsing, manipulating and analysis of FASTA/FASTQ files
