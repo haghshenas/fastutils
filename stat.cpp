@@ -19,9 +19,11 @@ void printHelp_stat()
 	cerr << endl;
 	cerr << "USAGE: fastutils stat [options]" << endl;
 	cerr << endl;
-	cerr << "More options:" << endl;
+	cerr << "Required options:" << endl;
 	cerr << "         -f STR        input file in fastx format [stdin]" << endl;
 	cerr << "         -o STR        output file [stdout]" << endl;
+	cerr << endl;
+	cerr << "More options:" << endl;
 	// cerr << "         -m INT        min read length [0]" << endl;
 	// cerr << "         -M INT        max read length [LLONG_MAX]" << endl;
 	cerr << "         -h            print this help" << endl;
@@ -69,31 +71,47 @@ int parseCommandLine_stat(int argc, char *argv[])
 
 	if(_stat_in_path == "")
 	{
-		_stat_in_file = stdin;
+		cerr<< "[ERROR] option -i/--in is required" << endl << endl;
+		return 0;
 	}
 	else
 	{
-		_stat_in_file = fopen(_stat_in_path.c_str(), "r");
-		if(_stat_in_file == NULL)
+		if(_stat_in_path == "-")
 		{
-			cerr<< "[ERROR] could not open file: " << _stat_in_path << endl << endl;
-			return 0;
+			_stat_in_file = stdin;
+		}
+		else
+		{
+			_stat_in_file = fopen(_stat_in_path.c_str(), "r");
+			if(_stat_in_file == NULL)
+			{
+				cerr<< "[ERROR] could not open file: " << _stat_in_path << endl << endl;
+				return 0;
+			}
 		}
 	}
 
 	if(_stat_out_path == "")
 	{
-		_stat_out_pointer = &cout;
+		cerr<< "[ERROR] option -o/--out is required" << endl << endl;
+		return 0;
 	}
 	else
 	{
-		_stat_out_file.open(_stat_out_path.c_str());
-		if(_stat_out_file.is_open()==false)
+		if(_stat_out_path == "-")
 		{
-			cerr<< "[ERROR] could not open file: " << _stat_out_path << endl << endl;
-			return 0;
+			_stat_out_pointer = &cout;
 		}
-		_stat_out_pointer = &_stat_out_file;
+		else
+		{
+			_stat_out_file.open(_stat_out_path.c_str());
+			if(_stat_out_file.is_open()==false)
+			{
+				cerr<< "[ERROR] could not open file: " << _stat_out_path << endl << endl;
+				return 0;
+			}
+			_stat_out_pointer = &_stat_out_file;	
+		}
 	}
 
 	if(_stat_min_len < 0)
@@ -111,11 +129,11 @@ int parseCommandLine_stat(int argc, char *argv[])
 
 int program_stat(int argc, char* argv[])
 {
-	// if(argc < 3)
-	// {
-	// 	printHelp_stat();
-	// 	return EXIT_SUCCESS;
-	// }
+	if(argc < 3)
+	{
+		printHelp_stat();
+		return EXIT_SUCCESS;
+	}
 
 	if(!parseCommandLine_stat(argc, argv))
 	{
