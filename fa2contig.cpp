@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 #include "kseq.h"
 KSEQ_INIT(gzFile, gzread)
 
@@ -7,8 +7,6 @@ FILE         *_fa2contig_in_file;
 string       _fa2contig_out_path         = "";
 ofstream     _fa2contig_out_file;
 ostream      *_fa2contig_out_pointer     = NULL;
-llong        _fa2contig_min_len          = 0;
-llong        _fa2contig_max_len          = LLONG_MAX;
 
 void printHelp_fa2contig()
 {
@@ -126,11 +124,11 @@ int program_fa2contig(int argc, char* argv[])
 	}
 	ostream &outObj = *_fa2contig_out_pointer;
 
-	llong i;
-	llong pos_start = 0;
-	llong pos_n = 0;
+	uint64_t i;
+	uint64_t pos_start = 0;
+	uint64_t pos_n = 0;
 	string str;
-	llong num_contig = 0;
+	uint64_t num_contig = 1;
 
 	gzFile fp = gzdopen(fileno(_fa2contig_in_file), "r");
 	if(fp == NULL)
@@ -146,10 +144,11 @@ int program_fa2contig(int argc, char* argv[])
 		i=0;
 		while(i < str.size())
 		{
-			// skip N's
+			// find first non-N base
 			while(i < str.size() && toupper(str[i])=='N')
 				i++;
 			pos_start = i;
+			// find next N base
 			while(i < str.size() && toupper(str[i])!='N')
 				i++;
 			if(i - pos_start > 0)
@@ -160,29 +159,9 @@ int program_fa2contig(int argc, char* argv[])
 			}
 			pos_n = i;
 		}
-	// 	if(seq->seq.l >= _stat_min_len && seq->seq.l <= _stat_max_len)
-	// 	{
-	// 		num++;
-	// 		sLen += seq->seq.l;
-	// 		for(i=0; i<seq->seq.l; i++)
-	// 		{
-	// 			cnt[ seq->seq.s[i] ]++;
-	// 		}
-	// 	}
 	}
 	kseq_destroy(seq);
 	gzclose(fp);
-
-	// outObj<< "# reads: " << num << endl;
-	// outObj<< "# bases: " << sLen << endl;
-	// outObj<< fixed << setprecision(2);
-	// for(i=0; i<128; i++)
-	// {
-	// 	if(cnt[i])
-	// 	{
-	// 		outObj<< "# " << (char)i << ": " << cnt[i] << " " << (double)cnt[i]/sLen*100 << "\n";
-	// 	}
-	// }
 
 	return 0;
 }

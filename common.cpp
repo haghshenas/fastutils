@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 
 // global in common
 char _com_lowVal[128] = {

@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 #include "kseq.h"
 KSEQ_INIT(gzFile, gzread)
 
@@ -7,8 +7,8 @@ FILE         *_stat_in_file;
 string       _stat_out_path         = "";
 ofstream     _stat_out_file;
 ostream      *_stat_out_pointer     = NULL;
-llong        _stat_min_len          = 0;
-llong        _stat_max_len          = LLONG_MAX;
+int64_t      _stat_min_len          = 0;
+int64_t      _stat_max_len          = INT64_MAX;
 
 void printHelp_stat()
 {
@@ -53,10 +53,10 @@ int parseCommandLine_stat(int argc, char *argv[])
 				_stat_out_path = optarg;
 				break;
 			case 'm':
-				_stat_min_len = str2type<long long>(optarg);
+				_stat_min_len = str2type<int64_t>(optarg);
 				break;
 			case 'M':
-				_stat_max_len = str2type<long long>(optarg);
+				_stat_max_len = str2type<int64_t>(optarg);
 				break;
 			case 'h':
 				printHelp_stat();
@@ -122,7 +122,7 @@ int parseCommandLine_stat(int argc, char *argv[])
 	if(_stat_min_len < 0)
 		_stat_min_len = 0;
 	if(_stat_max_len < 0)
-		_stat_max_len = LLONG_MAX;
+		_stat_max_len = INT64_MAX;
 	if(_stat_min_len > _stat_max_len)
 	{
 		cerr<< "[ERROR] minLen cannot be greater than maxLen" << endl << endl;
@@ -146,9 +146,9 @@ int program_stat(int argc, char* argv[])
 	}
 	ostream &outObj = *_stat_out_pointer;
 
-	llong cnt[128] = {0};
-	llong num = 0;
-	llong sLen = 0;
+	uint64_t cnt[128] = {0};
+	uint64_t num = 0;
+	uint64_t sLen = 0;
 	int i;
 
 	gzFile fp = gzdopen(fileno(_stat_in_file), "r");

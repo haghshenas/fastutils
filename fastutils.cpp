@@ -1,6 +1,6 @@
-#include "common.h"
-#include "stat.h"
-#include "fa2contig.h"
+#include "common.hpp"
+#include "fxstat.hpp"
+#include "fa2contig.hpp"
 
 void printHelp_core();
 

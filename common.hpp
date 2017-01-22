@@ -24,14 +24,12 @@
 
 using namespace std;
 
-typedef long long llong;
-
-string 				str2Lower(string str);
-string 				str2Upper(string str);
-void 				revString(string &str, string &revStr);
-void 				revString(string &revStr, char *str);
-void 				revComplement(string &str, string &revStr);
-void 				revComplement(string &revStr, char *str);
+string str2Lower(string str);
+string str2Upper(string str);
+void   revString(string &str, string &revStr);
+void   revString(string &revStr, char *str);
+void   revComplement(string &str, string &revStr);
+void   revComplement(string &revStr, char *str);
 
 template <typename T>
 T str2type(string str)
