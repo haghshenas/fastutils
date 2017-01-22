@@ -24,6 +24,8 @@
 
 using namespace std;
 
+typedef long long llong;
+
 string 				str2Lower(string str);
 string 				str2Upper(string str);
 void 				revString(string &str, string &revStr);

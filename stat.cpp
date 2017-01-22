@@ -2,10 +2,6 @@
 #include "kseq.h"
 KSEQ_INIT(gzFile, gzread)
 
-using namespace std;
-
-typedef long long llong;
-
 string       _stat_in_path          = "";
 FILE         *_stat_in_file;
 string       _stat_out_path         = "";
@@ -20,8 +16,8 @@ void printHelp_stat()
 	cerr << "USAGE: fastutils stat [options]" << endl;
 	cerr << endl;
 	cerr << "Required options:" << endl;
-	cerr << "         -f STR        input file in fastx format [stdin]" << endl;
-	cerr << "         -o STR        output file [stdout]" << endl;
+	cerr << "         -i STR        input file in fastx format. Use - for stdin." << endl;
+	cerr << "         -o STR        output file. Use - for stdout." << endl;
 	cerr << endl;
 	cerr << "More options:" << endl;
 	cerr << "         -m INT        min read length [0]" << endl;
