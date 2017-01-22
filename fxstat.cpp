@@ -2,18 +2,18 @@
 #include "kseq.h"
 KSEQ_INIT(gzFile, gzread)
 
-string       _stat_in_path          = "";
-FILE         *_stat_in_file;
-string       _stat_out_path         = "";
-ofstream     _stat_out_file;
-ostream      *_stat_out_pointer     = NULL;
-int64_t      _stat_min_len          = 0;
-int64_t      _stat_max_len          = INT64_MAX;
+string       _fxstat_in_path          = "";
+FILE         *_fxstat_in_file;
+string       _fxstat_out_path         = "";
+ofstream     _fxstat_out_file;
+ostream      *_fxstat_out_pointer     = NULL;
+int64_t      _fxstat_min_len          = 0;
+int64_t      _fxstat_max_len          = INT64_MAX;
 
-void printHelp_stat()
+void printHelp_fxstat()
 {
 	cerr << endl;
-	cerr << "USAGE: fastutils stat [options]" << endl;
+	cerr << "USAGE: fastutils fxstat [options]" << endl;
 	cerr << endl;
 	cerr << "Required options:" << endl;
 	cerr << "         -i STR        input file in fastx format. Use - for stdin." << endl;
@@ -21,13 +21,13 @@ void printHelp_stat()
 	cerr << endl;
 	cerr << "More options:" << endl;
 	cerr << "         -m INT        min read length [0]" << endl;
-	cerr << "         -M INT        max read length [LLONG_MAX]" << endl;
+	cerr << "         -M INT        max read length [INT64_MAX]" << endl;
 	cerr << "         -v            print version and build date" << endl;
 	cerr << "         -h            print this help" << endl;
 	cerr << endl;
 }
 
-int parseCommandLine_stat(int argc, char *argv[])
+int parseCommandLine_fxstat(int argc, char *argv[])
 {
 	int index, c;
 
@@ -47,19 +47,19 @@ int parseCommandLine_stat(int argc, char *argv[])
 		switch (c)
 		{
 			case 'i':
-				_stat_in_path = optarg;
+				_fxstat_in_path = optarg;
 				break;
 			case 'o':
-				_stat_out_path = optarg;
+				_fxstat_out_path = optarg;
 				break;
 			case 'm':
-				_stat_min_len = str2type<int64_t>(optarg);
+				_fxstat_min_len = str2type<int64_t>(optarg);
 				break;
 			case 'M':
-				_stat_max_len = str2type<int64_t>(optarg);
+				_fxstat_max_len = str2type<int64_t>(optarg);
 				break;
 			case 'h':
-				printHelp_stat();
+				printHelp_fxstat();
 				exit(EXIT_SUCCESS);
 				break;
 			case 'v':
@@ -74,56 +74,56 @@ int parseCommandLine_stat(int argc, char *argv[])
 		}
 	}
 
-	if(_stat_in_path == "")
+	if(_fxstat_in_path == "")
 	{
 		cerr<< "[ERROR] option -i/--in is required" << endl << endl;
 		return 0;
 	}
 	else
 	{
-		if(_stat_in_path == "-")
+		if(_fxstat_in_path == "-")
 		{
-			_stat_in_file = stdin;
+			_fxstat_in_file = stdin;
 		}
 		else
 		{
-			_stat_in_file = fopen(_stat_in_path.c_str(), "r");
-			if(_stat_in_file == NULL)
+			_fxstat_in_file = fopen(_fxstat_in_path.c_str(), "r");
+			if(_fxstat_in_file == NULL)
 			{
-				cerr<< "[ERROR] could not open file: " << _stat_in_path << endl << endl;
+				cerr<< "[ERROR] could not open file: " << _fxstat_in_path << endl << endl;
 				return 0;
 			}
 		}
 	}
 
-	if(_stat_out_path == "")
+	if(_fxstat_out_path == "")
 	{
 		cerr<< "[ERROR] option -o/--out is required" << endl << endl;
 		return 0;
 	}
 	else
 	{
-		if(_stat_out_path == "-")
+		if(_fxstat_out_path == "-")
 		{
-			_stat_out_pointer = &cout;
+			_fxstat_out_pointer = &cout;
 		}
 		else
 		{
-			_stat_out_file.open(_stat_out_path.c_str());
-			if(_stat_out_file.is_open()==false)
+			_fxstat_out_file.open(_fxstat_out_path.c_str());
+			if(_fxstat_out_file.is_open()==false)
 			{
-				cerr<< "[ERROR] could not open file: " << _stat_out_path << endl << endl;
+				cerr<< "[ERROR] could not open file: " << _fxstat_out_path << endl << endl;
 				return 0;
 			}
-			_stat_out_pointer = &_stat_out_file;	
+			_fxstat_out_pointer = &_fxstat_out_file;	
 		}
 	}
 
-	if(_stat_min_len < 0)
-		_stat_min_len = 0;
-	if(_stat_max_len < 0)
-		_stat_max_len = INT64_MAX;
-	if(_stat_min_len > _stat_max_len)
+	if(_fxstat_min_len < 0)
+		_fxstat_min_len = 0;
+	if(_fxstat_max_len < 0)
+		_fxstat_max_len = INT64_MAX;
+	if(_fxstat_min_len > _fxstat_max_len)
 	{
 		cerr<< "[ERROR] minLen cannot be greater than maxLen" << endl << endl;
 		return 0;
@@ -132,35 +132,35 @@ int parseCommandLine_stat(int argc, char *argv[])
 	return 1;
 }
 
-int program_stat(int argc, char* argv[])
+int program_fxstat(int argc, char* argv[])
 {
 	if(argc < 3)
 	{
-		printHelp_stat();
+		printHelp_fxstat();
 		return EXIT_SUCCESS;
 	}
 
-	if(!parseCommandLine_stat(argc, argv))
+	if(!parseCommandLine_fxstat(argc, argv))
 	{
 		return EXIT_FAILURE;
 	}
-	ostream &outObj = *_stat_out_pointer;
+	ostream &outObj = *_fxstat_out_pointer;
 
 	uint64_t cnt[128] = {0};
 	uint64_t num = 0;
 	uint64_t sLen = 0;
 	int i;
 
-	gzFile fp = gzdopen(fileno(_stat_in_file), "r");
+	gzFile fp = gzdopen(fileno(_fxstat_in_file), "r");
 	if(fp == NULL)
 	{
-		cerr << "Cannot open file: " << (_stat_in_path == "-" ? "stdin" : _stat_in_path) << endl;
+		cerr << "Cannot open file: " << (_fxstat_in_path == "-" ? "stdin" : _fxstat_in_path) << endl;
 		exit(1);
 	}
 	kseq_t *seq = kseq_init(fp);
 	while (kseq_read(seq) >= 0)
 	{
-		if(seq->seq.l >= _stat_min_len && seq->seq.l <= _stat_max_len)
+		if(seq->seq.l >= _fxstat_min_len && seq->seq.l <= _fxstat_max_len)
 		{
 			num++;
 			sLen += seq->seq.l;

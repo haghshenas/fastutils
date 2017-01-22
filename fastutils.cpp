@@ -13,9 +13,9 @@ int main(int argc, char* argv[])
 	else
 	{
 		string com = argv[1];
-		if(com == "stat")
+		if(com == "fxstat")
 		{
-			return program_stat(argc, argv);	
+			return program_fxstat(argc, argv);	
 		}
 		else if(com == "fa2contig")
 		{
@@ -34,7 +34,7 @@ void printHelp_core()
 	cerr<< endl;
 	cerr<< "USAGE: fastutils <command> [options]" << endl;
 	cerr<< endl;
-	cerr<< "command: stat         prints general statistics of fastx files" << endl;
+	cerr<< "command: fxstat       prints general statistics of fastx files" << endl;
 	cerr<< "         fa2contig    splits fasta file into contigs" << endl;
 	cerr<< endl;
 }
