@@ -9,6 +9,7 @@
 #include <math.h>
 #include <getopt.h>
 #include <zlib.h>
+#include <limits.h>
 
 #include <string>
 #include <iostream>

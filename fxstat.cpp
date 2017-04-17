@@ -8,7 +8,7 @@ string       _fxstat_out_path         = "";
 ofstream     _fxstat_out_file;
 ostream      *_fxstat_out_pointer     = NULL;
 int64_t      _fxstat_min_len          = 0;
-int64_t      _fxstat_max_len          = INT64_MAX;
+int64_t      _fxstat_max_len          = LLONG_MAX;
 
 void printHelp_fxstat()
 {
@@ -122,7 +122,7 @@ int parseCommandLine_fxstat(int argc, char *argv[])
 	if(_fxstat_min_len < 0)
 		_fxstat_min_len = 0;
 	if(_fxstat_max_len < 0)
-		_fxstat_max_len = INT64_MAX;
+		_fxstat_max_len = LLONG_MAX;
 	if(_fxstat_min_len > _fxstat_max_len)
 	{
 		cerr<< "[ERROR] minLen cannot be greater than maxLen" << endl << endl;
