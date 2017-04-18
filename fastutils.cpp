@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include "fxstat.hpp"
+#include "fxsubseq.hpp"
 #include "fa2contig.hpp"
 
 void printHelp_core();
@@ -16,6 +17,10 @@ int main(int argc, char* argv[])
 		if(com == "fxstat")
 		{
 			return program_fxstat(argc, argv);	
+		}
+		else if(com == "fxsubseq")
+		{
+			return program_fxsubseq(argc, argv);
 		}
 		else if(com == "fa2contig")
 		{
@@ -35,6 +40,7 @@ void printHelp_core()
 	cerr<< "USAGE: fastutils <command> [options]" << endl;
 	cerr<< endl;
 	cerr<< "command: fxstat       prints general statistics of fastx files" << endl;
+	cerr<< "         fxsubseq     extracts a subsequence from the fastx file" << endl;
 	cerr<< "         fa2contig    splits fasta file into contigs" << endl;
 	cerr<< endl;
 }
