@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include "stat.hpp"
+#include "format.hpp"
 #include "fxsubseq.hpp"
 #include "fa2contig.hpp"
 
@@ -17,6 +18,10 @@ int main(int argc, char* argv[])
         if(com == "stat")
         {
             return command_stat(argc, argv);
+        }
+        else if(com == "format")
+        {
+            return command_format(argc, argv);
         }
         else if(com == "fxsubseq")
         {
@@ -43,8 +48,9 @@ void printHelp_core()
     fprintf(stdout, "Usage: fastutils <command> [options]\n");
     fprintf(stdout, "\n");
     fprintf(stdout, "Commands:\n");
-    fprintf(stdout, "     stat         prints general statistics of fastx files\n");
-    fprintf(stdout, "     fxsubseq     extracts a subsequence from the fastx file\n");
-    fprintf(stdout, "     fa2contig    splits fasta file into contigs\n");
+    fprintf(stdout, "     stat         prints general statistics of fasta/q files\n");
+    fprintf(stdout, "     format       re-formats the fasta/q file based on user's needs\n");
+    fprintf(stdout, "     fxsubseq     extracts a subsequence from the fasta/q file\n");
+    fprintf(stdout, "     fa2contig    breaks fasta entries into contigs (if containing N's)\n");
     fprintf(stdout, "\n");
 }
