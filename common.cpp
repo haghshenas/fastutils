@@ -36,52 +36,52 @@ char _com_revVal[128] = {
 
 string str2Lower(string str)
 {
-	string lowerStr(str.size(), 'n');
-	for(int i=0; i<str.size(); i++)
-	{
-		lowerStr[i] = _com_lowVal[str[i]];
-	}
-	return lowerStr;
+    string lowerStr(str.size(), 'n');
+    for(int i=0; i<str.size(); i++)
+    {
+        lowerStr[i] = _com_lowVal[str[i]];
+    }
+    return lowerStr;
 }
 
 string str2Upper(string str)
 {
-	string upperStr(str.size(), 'N');
-	for(int i=0; i<str.size(); i++)
-	{
-		upperStr[i] = _com_upVal[str[i]];
-	}
-	return upperStr;
+    string upperStr(str.size(), 'N');
+    for(int i=0; i<str.size(); i++)
+    {
+        upperStr[i] = _com_upVal[str[i]];
+    }
+    return upperStr;
 }
 
 void revString(string &revStr, string &str)
 {
-	int n = str.size();
-	revStr.assign(n, 'N');
-	for(int i=0; i<n; i++)
-		revStr[i] = str[n-i-1];
+    int n = str.size();
+    revStr.assign(n, 'N');
+    for(int i=0; i<n; i++)
+        revStr[i] = str[n-i-1];
 }
 
 void revString(string &revStr, char *str)
 {
-	int n = strlen(str);
-	revStr.assign(n, 'N');
-	for(int i=0; i<n; i++)
-		revStr[i] = str[n-i-1];
+    int n = strlen(str);
+    revStr.assign(n, 'N');
+    for(int i=0; i<n; i++)
+        revStr[i] = str[n-i-1];
 }
 
 void revComplement(string &revStr, string &str)
 {
-	int n = str.size();
-	revStr.assign(n, 'N');
-	for(int i=0; i<n; i++)
-		revStr[i] = _com_revVal[str[n-i-1]];
+    int n = str.size();
+    revStr.assign(n, 'N');
+    for(int i=0; i<n; i++)
+        revStr[i] = _com_revVal[str[n-i-1]];
 }
 
 void revComplement(string &revStr, char *str)
 {
-	int n = strlen(str);
-	revStr.assign(n, 'N');
-	for(int i=0; i<n; i++)
-		revStr[i] = _com_revVal[str[n-i-1]];
+    int n = strlen(str);
+    revStr.assign(n, 'N');
+    for(int i=0; i<n; i++)
+        revStr[i] = _com_revVal[str[n-i-1]];
 }

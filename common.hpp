@@ -36,18 +36,18 @@ void   revComplement(string &revStr, char *str);
 template <typename T>
 T str2type(string str)
 {
-	T n;
-	istringstream sin(str);
-	sin >> n;
-	return n;
+    T n;
+    istringstream sin(str);
+    sin >> n;
+    return n;
 }
 
 template <typename T>
 string type2str(T v)
 {
-	ostringstream sout;
-	sout << v;
-	return sout.str();
+    ostringstream sout;
+    sout << v;
+    return sout.str();
 }
 
 #endif //__COMMON__
