@@ -7,8 +7,8 @@ string      _fxstat_in_path          = "";
 FILE        *_fxstat_in_file;
 string      _fxstat_out_path         = "";
 FILE        *_fxstat_out_file;
-int64_t     _fxstat_min_len          = 0;
-int64_t     _fxstat_max_len          = LLONG_MAX;
+long long   _fxstat_min_len          = 0;
+long long   _fxstat_max_len          = LLONG_MAX;
 
 void printHelp_stat()
 {
@@ -51,10 +51,10 @@ int parseCommandLine_stat(int argc, char *argv[])
                 _fxstat_out_path = optarg;
                 break;
             case 'm':
-                _fxstat_min_len = str2type<int64_t>(optarg);
+                _fxstat_min_len = str2type<long long>(optarg);
                 break;
             case 'M':
-                _fxstat_max_len = str2type<int64_t>(optarg);
+                _fxstat_max_len = str2type<long long>(optarg);
                 break;
             case 'h':
                 printHelp_stat();
@@ -118,16 +118,16 @@ int command_stat(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    uint64_t cnt[128] = {0};
-    uint64_t num = 0;
-    uint64_t sLen = 0;
+    unsigned long long cnt[128] = {0};
+    unsigned long long num = 0;
+    unsigned long long sLen = 0;
     int i;
 
     gzFile fp = gzdopen(fileno(_fxstat_in_file), "r");
     if(fp == NULL)
     {
-        cerr << "Cannot open file: " << (_fxstat_in_path == "-" ? "stdin" : _fxstat_in_path) << endl;
-        exit(EXIT_FAILURE);
+        fprintf(stderr, "Cannot open file: %s\n", (_fxstat_in_path == "" ? "stdin" : _fxstat_in_path.c_str()));
+        return EXIT_FAILURE;
     }
     kseq_t *seq = kseq_init(fp);
     while (kseq_read(seq) >= 0)

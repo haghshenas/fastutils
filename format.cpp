@@ -9,8 +9,8 @@ FILE        *_format_in_file;
 string      _format_out_path    = "";
 FILE        *_format_out_file;
 int         _format_lineWidth   = 0;
-int64_t     _format_minLen      = 0;
-int64_t     _format_maxLen      = LLONG_MAX;
+long long   _format_minLen      = 0;
+long long   _format_maxLen      = LLONG_MAX;
 bool        _format_isFastq     = false;
 bool        _format_noN         = false;
 bool        _format_noComment   = true;
@@ -73,10 +73,10 @@ int parseCommandLine_format(int argc, char *argv[])
                 _format_lineWidth = str2type<int>(optarg);
                 break;
             case 'm':
-                _format_minLen = str2type<int64_t>(optarg);
+                _format_minLen = str2type<long long>(optarg);
                 break;
             case 'M':
-                _format_maxLen = str2type<int64_t>(optarg);
+                _format_maxLen = str2type<long long>(optarg);
                 break;
             case 'q':
                 _format_isFastq = true;
@@ -153,18 +153,18 @@ int parseCommandLine_format(int argc, char *argv[])
     return 0;
 }
 
-void printRead_format(FILE *fp, kseq_t *readSeq, int64_t cnt)
+void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
 {
     int tmpPos;
     string tmpStr;
     if(_format_isFastq && readSeq->qual.l>0)
     {
         if(_format_digital)
-            fprintf(fp, "@%lld", cnt);
+            fprintf(fp, "@%llu", cnt);
         else                
             fprintf(fp, "@%s", readSeq->name.s);
         if(_format_pacbio)
-            fprintf(fp, "/%lld/0_%u", cnt, readSeq->seq.l);
+            fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
@@ -176,11 +176,11 @@ void printRead_format(FILE *fp, kseq_t *readSeq, int64_t cnt)
     else
     {
         if(_format_digital)
-            fprintf(fp, ">%lld", cnt);
+            fprintf(fp, ">%llu", cnt);
         else                
             fprintf(fp, ">%s", readSeq->name.s);
         if(_format_pacbio)
-            fprintf(fp, "/%lld/0_%u", cnt, readSeq->seq.l);
+            fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
@@ -226,7 +226,7 @@ int command_format(int argc, char* argv[])
     }
     
     readSeq = kseq_init(readFile);
-    int64_t cnt = 0;
+    unsigned long long cnt = 0;
     while (kseq_read(readSeq) >= 0)
     {
         if( ((!_format_noN) || (_format_noN && hasNoN(readSeq->seq.s))) &&
