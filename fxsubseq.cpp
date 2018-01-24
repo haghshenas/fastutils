@@ -154,6 +154,7 @@ int program_fxsubseq(int argc, char* argv[])
             int seqEnd = str2type<int>( region.substr(region.find('-')+1) );
             if(seqStart < seqEnd)
             {
+                cout<< ">" << argv[optind] << "\n";
                 cout<< allSeq[seqName].substr(seqStart, seqEnd-seqStart) << "\n";
             }
 
