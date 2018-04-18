@@ -16,6 +16,7 @@ bool        _format_noN         = false;
 bool        _format_noComment   = true;
 bool        _format_pacbio      = false;
 bool        _format_digital     = false;
+string      _format_prefix      = "";
 
 void printHelp_format()
 {
@@ -35,6 +36,7 @@ void printHelp_format()
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
     fprintf(stderr, "     -p,--pacbio            use pacbio's header format\n");
     fprintf(stderr, "     -d,--digital           use read index instead as read name\n");
+    fprintf(stderr, "     -P,--prefix STR        prepend STR to the numbers when using -d/--digital\n");
     fprintf(stderr, "     -h,--help              print this help\n");
     fprintf(stderr, "\n");
 }
@@ -55,11 +57,12 @@ int parseCommandLine_format(int argc, char *argv[])
         {"comment",     no_argument,            0,      'c' },
         {"pacbio",      no_argument,            0,      'p' },
         {"digital",     no_argument,            0,      'd' },
+        {"prefix",      required_argument,      0,      'P' },
         {"help",        no_argument,            0,      'h' },
         {0,0,0,0}
     };
 
-    while ( (c = getopt_long ( argc, argv, "i:o:w:m:M:qncpdh", longOptions, &index))!= -1 )
+    while ( (c = getopt_long ( argc, argv, "i:o:w:m:M:P:qncpdh", longOptions, &index))!= -1 )
     {
         switch (c)
         {
@@ -92,6 +95,10 @@ int parseCommandLine_format(int argc, char *argv[])
                 break;
             case 'd':
                 _format_digital = true;
+                break;
+            case 'P':
+                _format_prefix = optarg;
+                _format_prefix += ".";
                 break;
             case 'h':
                 printHelp_format();
@@ -160,11 +167,11 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
     if(_format_isFastq && readSeq->qual.l>0)
     {
         if(_format_digital)
-            fprintf(fp, "@%llu", cnt);
+            fprintf(fp, "@%s%llu", _format_prefix.c_str(), cnt);
         else                
             fprintf(fp, "@%s", readSeq->name.s);
         if(_format_pacbio)
-            fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
+            fprintf(fp, "/%s%llu/0_%zu", _format_prefix.c_str(), cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
