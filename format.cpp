@@ -171,7 +171,7 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
         else                
             fprintf(fp, "@%s", readSeq->name.s);
         if(_format_pacbio)
-            fprintf(fp, "/%s%llu/0_%zu", _format_prefix.c_str(), cnt, readSeq->seq.l);
+            fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
@@ -183,7 +183,7 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
     else
     {
         if(_format_digital)
-            fprintf(fp, ">%llu", cnt);
+            fprintf(fp, ">%s%llu", _format_prefix.c_str(), cnt);
         else                
             fprintf(fp, ">%s", readSeq->name.s);
         if(_format_pacbio)
