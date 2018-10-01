@@ -36,7 +36,7 @@ void printHelp_format()
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
     fprintf(stderr, "     -p,--pacbio            use pacbio's header format\n");
     fprintf(stderr, "     -d,--digital           use read index instead as read name\n");
-    fprintf(stderr, "     -P,--prefix STR        prepend STR to the numbers when using -d/--digital\n");
+    fprintf(stderr, "     -P,--prefix STR        prepend STR to the name\n");
     fprintf(stderr, "     -h,--help              print this help\n");
     fprintf(stderr, "\n");
 }
@@ -98,7 +98,7 @@ int parseCommandLine_format(int argc, char *argv[])
                 break;
             case 'P':
                 _format_prefix = optarg;
-                _format_prefix += ".";
+                // _format_prefix += ".";
                 break;
             case 'h':
                 printHelp_format();
@@ -169,7 +169,7 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
         if(_format_digital)
             fprintf(fp, "@%s%llu", _format_prefix.c_str(), cnt);
         else                
-            fprintf(fp, "@%s", readSeq->name.s);
+            fprintf(fp, "@%s%s", _format_prefix.c_str(), readSeq->name.s);
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
@@ -185,7 +185,7 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
         if(_format_digital)
             fprintf(fp, ">%s%llu", _format_prefix.c_str(), cnt);
         else                
-            fprintf(fp, ">%s", readSeq->name.s);
+            fprintf(fp, ">%s%s", _format_prefix.c_str(), readSeq->name.s);
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
