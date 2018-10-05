@@ -3,6 +3,7 @@
 #include "format.hpp"
 #include "fxsubseq.hpp"
 #include "fa2contig.hpp"
+#include "length.hpp"
 
 void printHelp_core();
 
@@ -32,6 +33,10 @@ int main(int argc, char* argv[])
         {
             return program_fa2contig(argc, argv);
         }
+        else if(com == "length")
+        {
+            return command_length(argc, argv);
+        }
         else
         {
             printHelp_core();
@@ -50,6 +55,7 @@ void printHelp_core()
     fprintf(stderr, "\n");
     fprintf(stderr, "Commands:\n");
     fprintf(stderr, "     stat         prints general statistics of fasta/q files\n");
+    fprintf(stderr, "     length       prints read ids and their length in tabular format\n");
     fprintf(stderr, "     format       re-formats the fasta/q file based on user's needs\n");
     fprintf(stderr, "     fxsubseq     extracts a subsequence from the fasta/q file\n");
     fprintf(stderr, "     fa2contig    breaks fasta entries into contigs (if containing N's)\n");
