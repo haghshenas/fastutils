@@ -240,8 +240,9 @@ int command_format(int argc, char* argv[])
             readSeq->seq.l >= _format_minLen && 
             readSeq->seq.l <= _format_maxLen )
         {
-            cnt++;
+            // cnt++;
             printRead_format(_format_out_file, readSeq, cnt);
+            cnt++;
         }
     }
     kseq_destroy(readSeq);
