@@ -4,6 +4,7 @@
 #include "fxsubseq.hpp"
 #include "fa2contig.hpp"
 #include "length.hpp"
+#include "revcomp.hpp"
 
 void printHelp_core();
 
@@ -24,6 +25,10 @@ int main(int argc, char* argv[])
         else if(com == "format")
         {
             return command_format(argc, argv);
+        }
+        else if(com == "revcomp")
+        {
+            return command_revcomp(argc, argv);
         }
         else if(com == "fxsubseq")
         {
@@ -57,6 +62,7 @@ void printHelp_core()
     fprintf(stderr, "     stat         prints general statistics of fasta/q files\n");
     fprintf(stderr, "     length       prints read ids and their length in tabular format\n");
     fprintf(stderr, "     format       re-formats the fasta/q file based on user's needs\n");
+    fprintf(stderr, "     revcomp      prints the reverse complement of each sequence\n");
     fprintf(stderr, "     fxsubseq     extracts a subsequence from the fasta/q file\n");
     fprintf(stderr, "     fa2contig    breaks fasta entries into contigs (if containing N's)\n");
     fprintf(stderr, "\n");

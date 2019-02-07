@@ -17,6 +17,7 @@ bool        _format_noComment   = true;
 bool        _format_pacbio      = false;
 bool        _format_digital     = false;
 string      _format_prefix      = "";
+string      _format_suffix      = "";
 
 void printHelp_format()
 {
@@ -34,9 +35,10 @@ void printHelp_format()
     fprintf(stderr, "     -q,--fastq             output reads in fastq format if possible\n");
     fprintf(stderr, "     -n,--noN               do not print entries with N's\n");
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
-    fprintf(stderr, "     -p,--pacbio            use pacbio's header format\n");
     fprintf(stderr, "     -d,--digital           use read index instead as read name\n");
-    fprintf(stderr, "     -P,--prefix STR        prepend STR to the name\n");
+    fprintf(stderr, "     -p,--prefix STR        prepend STR to the name\n");
+    fprintf(stderr, "     -s,--suffix STR        append STR to the name\n");
+    fprintf(stderr, "     -P,--pacbio            use pacbio's header format\n");
     fprintf(stderr, "     -h,--help              print this help\n");
     fprintf(stderr, "\n");
 }
@@ -55,14 +57,15 @@ int parseCommandLine_format(int argc, char *argv[])
         {"fastq",       no_argument,            0,      'q' },
         {"noN",         no_argument,            0,      'n' },
         {"comment",     no_argument,            0,      'c' },
-        {"pacbio",      no_argument,            0,      'p' },
+        {"pacbio",      no_argument,            0,      'P' },
         {"digital",     no_argument,            0,      'd' },
-        {"prefix",      required_argument,      0,      'P' },
+        {"prefix",      required_argument,      0,      'p' },
+        {"suffix",      required_argument,      0,      's' },
         {"help",        no_argument,            0,      'h' },
         {0,0,0,0}
     };
 
-    while ( (c = getopt_long ( argc, argv, "i:o:w:m:M:P:qncpdh", longOptions, &index))!= -1 )
+    while ( (c = getopt_long ( argc, argv, "i:o:w:m:M:p:s:qncPdh", longOptions, &index))!= -1 )
     {
         switch (c)
         {
@@ -90,15 +93,17 @@ int parseCommandLine_format(int argc, char *argv[])
             case 'c':
                 _format_noComment = false;
                 break;
-            case 'p':
+            case 'P':
                 _format_pacbio = true;
                 break;
             case 'd':
                 _format_digital = true;
                 break;
-            case 'P':
+            case 'p':
                 _format_prefix = optarg;
-                // _format_prefix += ".";
+                break;
+            case 's':
+                _format_suffix = optarg;
                 break;
             case 'h':
                 printHelp_format();
@@ -167,9 +172,9 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
     if(_format_isFastq && readSeq->qual.l>0)
     {
         if(_format_digital)
-            fprintf(fp, "@%s%llu", _format_prefix.c_str(), cnt);
+            fprintf(fp, "@%s%llu%s", _format_prefix.c_str(), cnt, _format_suffix.c_str());
         else                
-            fprintf(fp, "@%s%s", _format_prefix.c_str(), readSeq->name.s);
+            fprintf(fp, "@%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
@@ -183,9 +188,9 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
     else
     {
         if(_format_digital)
-            fprintf(fp, ">%s%llu", _format_prefix.c_str(), cnt);
+            fprintf(fp, ">%s%llu", _format_prefix.c_str(), cnt, _format_suffix.c_str());
         else                
-            fprintf(fp, ">%s%s", _format_prefix.c_str(), readSeq->name.s);
+            fprintf(fp, ">%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_noComment==false && readSeq->comment.l > 0)
