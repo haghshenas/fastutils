@@ -14,6 +14,7 @@ long long   _format_maxLen      = LLONG_MAX;
 bool        _format_isFastq     = false;
 bool        _format_noN         = false;
 bool        _format_noComment   = true;
+bool        _format_keepName    = false;
 bool        _format_pacbio      = false;
 bool        _format_digital     = false;
 string      _format_prefix      = "";
@@ -36,6 +37,7 @@ void printHelp_format()
     fprintf(stderr, "     -n,--noN               do not print entries with N's\n");
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
     fprintf(stderr, "     -d,--digital           use read index instead as read name\n");
+    fprintf(stderr, "     -k,--name              print name as a comment when using -d\n");
     fprintf(stderr, "     -p,--prefix STR        prepend STR to the name\n");
     fprintf(stderr, "     -s,--suffix STR        append STR to the name\n");
     fprintf(stderr, "     -P,--pacbio            use pacbio's header format\n");
@@ -59,13 +61,14 @@ int parseCommandLine_format(int argc, char *argv[])
         {"comment",     no_argument,            0,      'c' },
         {"pacbio",      no_argument,            0,      'P' },
         {"digital",     no_argument,            0,      'd' },
+        {"name",        no_argument,            0,      'k' },
         {"prefix",      required_argument,      0,      'p' },
         {"suffix",      required_argument,      0,      's' },
         {"help",        no_argument,            0,      'h' },
         {0,0,0,0}
     };
 
-    while ( (c = getopt_long ( argc, argv, "i:o:w:m:M:p:s:qncPdh", longOptions, &index))!= -1 )
+    while ( (c = getopt_long ( argc, argv, "i:o:w:m:M:p:s:qncPdkh", longOptions, &index))!= -1 )
     {
         switch (c)
         {
@@ -98,6 +101,9 @@ int parseCommandLine_format(int argc, char *argv[])
                 break;
             case 'd':
                 _format_digital = true;
+                break;
+            case 'k':
+                _format_keepName = true;
                 break;
             case 'p':
                 _format_prefix = optarg;
@@ -177,6 +183,8 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
             fprintf(fp, "@%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
+        if(_format_digital && _format_keepName)
+            fprintf(fp, " %s", readSeq->name.s);
         if(_format_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
@@ -188,11 +196,13 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
     else
     {
         if(_format_digital)
-            fprintf(fp, ">%s%llu", _format_prefix.c_str(), cnt, _format_suffix.c_str());
+            fprintf(fp, ">%s%llu%s", _format_prefix.c_str(), cnt, _format_suffix.c_str());
         else                
             fprintf(fp, ">%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
+        if(_format_digital && _format_keepName)
+            fprintf(fp, " %s", readSeq->name.s);
         if(_format_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
