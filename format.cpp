@@ -180,7 +180,7 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
         if(_format_digital)
             fprintf(fp, "@%s%llu%s", _format_prefix.c_str(), cnt, _format_suffix.c_str());
         else                
-            fprintf(fp, "@%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
+            fprintf(fp, "@%s%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_digital && _format_keepName)
@@ -198,7 +198,7 @@ void printRead_format(FILE *fp, kseq_t *readSeq, unsigned long long cnt)
         if(_format_digital)
             fprintf(fp, ">%s%llu%s", _format_prefix.c_str(), cnt, _format_suffix.c_str());
         else                
-            fprintf(fp, ">%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
+            fprintf(fp, ">%s%s%s", _format_prefix.c_str(), readSeq->name.s, _format_suffix.c_str());
         if(_format_pacbio)
             fprintf(fp, "/%llu/0_%zu", cnt, readSeq->seq.l);
         if(_format_digital && _format_keepName)

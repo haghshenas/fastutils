@@ -2,6 +2,7 @@
 #include "stat.hpp"
 #include "format.hpp"
 #include "fxsubseq.hpp"
+#include "subsample.hpp"
 #include "fa2contig.hpp"
 #include "length.hpp"
 #include "revcomp.hpp"
@@ -33,6 +34,10 @@ int main(int argc, char* argv[])
         else if(com == "fxsubseq")
         {
             return program_fxsubseq(argc, argv);
+        }
+        else if(com == "subsample")
+        {
+            return program_subsample(argc, argv);
         }
         else if(com == "fa2contig")
         {

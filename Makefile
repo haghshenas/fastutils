@@ -1,7 +1,7 @@
 FASTUTILS_VERSION = "0.0.2"
 
 CXX      ?= g++
-CXXFLAGS  = -O2 -DFASTUTILS_VERSION=\"$(FASTUTILS_VERSION)\"
+CXXFLAGS  = -O2 -std=c++11 -DFASTUTILS_VERSION=\"$(FASTUTILS_VERSION)\"
 LDFLAGS   = -lz
 
 all: clean-exe fastutils clean
