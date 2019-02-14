@@ -189,7 +189,7 @@ void subsample_random()
     // 1st pass
     gzFile readFile;
     kseq_t *readSeq;
-    vector<pair<int, string> > read_lens;
+    vector<int> read_lens;
     readFile = gzopen(_subsample_in_path.c_str(), "r");
     if(readFile==NULL)
     {
@@ -199,7 +199,7 @@ void subsample_random()
     readSeq = kseq_init(readFile);
     while(kseq_read(readSeq) >= 0)
     {
-        read_lens.push_back(make_pair(readSeq->seq.l, readSeq->name.s));
+        read_lens.push_back(readSeq->seq.l);
     }
     kseq_destroy(readSeq);
     gzclose(readFile);
@@ -214,7 +214,7 @@ void subsample_random()
         if(selected_index.count(r) == 0) // not in the set
         {
             selected_index.insert(r);
-            blen += read_lens[r].first;
+            blen += read_lens[r];
             if(blen >= bmax)
                 break;
         }
@@ -245,28 +245,30 @@ void subsample_longest()
     // 1st pass
     gzFile readFile;
     kseq_t *readSeq;
-    vector<pair<int, string> > read_lens;
+    vector<pair<int, int> > read_lens;
     readFile = gzopen(_subsample_in_path.c_str(), "r");
     if(readFile==NULL)
     {
         fprintf(stderr, "[ERROR] Cannot open file: %s\n", _subsample_in_path.c_str());
         exit(EXIT_FAILURE);
     }
+    int cnt = 0;
     readSeq = kseq_init(readFile);
     while(kseq_read(readSeq) >= 0)
     {
-        read_lens.push_back(make_pair(readSeq->seq.l, readSeq->name.s));
+        read_lens.push_back(make_pair(readSeq->seq.l, cnt));
+        cnt++;
     }
     kseq_destroy(readSeq);
     gzclose(readFile);
     // select
-    sort(read_lens.begin(), read_lens.end(), greater<pair<int, string> >());
+    sort(read_lens.begin(), read_lens.end(), greater<pair<int, int> >());
     long long blen = 0;
     long long bmax = (long long)_subsample_genomeSize * _subsample_depth;
-    unordered_set<string> selected;
+    unordered_set<int> selected_index;
     for(int i = 0; i < read_lens.size(); i++)
     {
-        selected.insert(read_lens[i].second);
+        selected_index.insert(read_lens[i].second);
         blen += read_lens[i].first;
         if(blen >= bmax)
             break;
@@ -280,11 +282,13 @@ void subsample_longest()
         fprintf(stderr, "[ERROR] Cannot open file: %s\n", _subsample_in_path.c_str());
         exit(EXIT_FAILURE);
     }
+    cnt = 0;
     readSeq2 = kseq_init(readFile2);
     while (kseq_read(readSeq2) >= 0)
     {
-        if(selected.count(readSeq2->name.s) > 0)
+        if(selected_index.count(cnt) > 0)
             printRead_subsample(_subsample_out_file, readSeq2);
+        cnt++;
     }
     kseq_destroy(readSeq2);
     gzclose(readFile2);
