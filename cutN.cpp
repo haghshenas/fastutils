@@ -3,16 +3,16 @@
 
 KSEQ_INIT(gzFile, gzread)
 
-string       _fa2contig_in_path          = "";
-FILE         *_fa2contig_in_file;
-string       _fa2contig_out_path         = "";
-ofstream     _fa2contig_out_file;
-ostream      *_fa2contig_out_pointer     = NULL;
+string       _cutN_in_path          = "";
+FILE         *_cutN_in_file;
+string       _cutN_out_path         = "";
+ofstream     _cutN_out_file;
+ostream      *_cutN_out_pointer     = NULL;
 
-void printHelp_fa2contig()
+void printHelp_cutN()
 {
     cerr << endl;
-    cerr << "USAGE: fastutils fa2contig [options]" << endl;
+    cerr << "USAGE: fastutils cutN [options]" << endl;
     cerr << endl;
     cerr << "Required options:" << endl;
     cerr << "         -i STR        input file in fastx format. Use - for stdin." << endl;
@@ -24,7 +24,7 @@ void printHelp_fa2contig()
     cerr << endl;
 }
 
-int parseCommandLine_fa2contig(int argc, char *argv[])
+int parseCommandLine_cutN(int argc, char *argv[])
 {
     int index, c;
 
@@ -42,13 +42,13 @@ int parseCommandLine_fa2contig(int argc, char *argv[])
         switch (c)
         {
             case 'i':
-                _fa2contig_in_path = optarg;
+                _cutN_in_path = optarg;
                 break;
             case 'o':
-                _fa2contig_out_path = optarg;
+                _cutN_out_path = optarg;
                 break;
             case 'h':
-                printHelp_fa2contig();
+                printHelp_cutN();
                 exit(EXIT_SUCCESS);
                 break;
             case 'v':
@@ -63,67 +63,67 @@ int parseCommandLine_fa2contig(int argc, char *argv[])
         }
     }
 
-    if(_fa2contig_in_path == "")
+    if(_cutN_in_path == "")
     {
         cerr<< "[ERROR] option -i/--in is required" << endl << endl;
         return 0;
     }
     else
     {
-        if(_fa2contig_in_path == "-")
+        if(_cutN_in_path == "-")
         {
-            _fa2contig_in_file = stdin;
+            _cutN_in_file = stdin;
         }
         else
         {
-            _fa2contig_in_file = fopen(_fa2contig_in_path.c_str(), "r");
-            if(_fa2contig_in_file == NULL)
+            _cutN_in_file = fopen(_cutN_in_path.c_str(), "r");
+            if(_cutN_in_file == NULL)
             {
-                cerr<< "[ERROR] could not open file: " << _fa2contig_in_path << endl << endl;
+                cerr<< "[ERROR] could not open file: " << _cutN_in_path << endl << endl;
                 return 0;
             }
         }
     }
 
-    if(_fa2contig_out_path == "")
+    if(_cutN_out_path == "")
     {
         cerr<< "[ERROR] option -o/--out is required" << endl << endl;
         return 0;
     }
     else
     {
-        if(_fa2contig_out_path == "-")
+        if(_cutN_out_path == "-")
         {
-            _fa2contig_out_pointer = &cout;
+            _cutN_out_pointer = &cout;
         }
         else
         {
-            _fa2contig_out_file.open(_fa2contig_out_path.c_str());
-            if(_fa2contig_out_file.is_open()==false)
+            _cutN_out_file.open(_cutN_out_path.c_str());
+            if(_cutN_out_file.is_open()==false)
             {
-                cerr<< "[ERROR] could not open file: " << _fa2contig_out_path << endl << endl;
+                cerr<< "[ERROR] could not open file: " << _cutN_out_path << endl << endl;
                 return 0;
             }
-            _fa2contig_out_pointer = &_fa2contig_out_file;
+            _cutN_out_pointer = &_cutN_out_file;
         }
     }
 
     return 1;
 }
 
-int program_fa2contig(int argc, char* argv[])
+int program_cutN(int argc, char* argv[])
 {
     if(argc < 3)
     {
-        printHelp_fa2contig();
+        printHelp_cutN();
         return EXIT_SUCCESS;
     }
 
-    if(!parseCommandLine_fa2contig(argc, argv))
+    if(!parseCommandLine_cutN(argc, argv))
     {
         return EXIT_FAILURE;
     }
-    ostream &outObj = *_fa2contig_out_pointer;
+    ostream &outObj = *_cutN_out_pointer;
 
     uint64_t i;
     uint64_t pos_start = 0;
@@ -131,10 +131,10 @@ int program_fa2contig(int argc, char* argv[])
     string str;
     uint64_t num_contig = 1;
 
-    gzFile fp = gzdopen(fileno(_fa2contig_in_file), "r");
+    gzFile fp = gzdopen(fileno(_cutN_in_file), "r");
     if(fp == NULL)
     {
-        cerr << "Cannot open file: " << (_fa2contig_in_path == "-" ? "stdin" : _fa2contig_in_path) << endl;
+        cerr << "Cannot open file: " << (_cutN_in_path == "-" ? "stdin" : _cutN_in_path) << endl;
         exit(1);
     }
     kseq_t *seq = kseq_init(fp);

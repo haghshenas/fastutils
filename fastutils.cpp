@@ -1,9 +1,9 @@
 #include "common.hpp"
 #include "stat.hpp"
 #include "format.hpp"
-#include "fxsubseq.hpp"
+#include "subseq.hpp"
 #include "subsample.hpp"
-#include "fa2contig.hpp"
+#include "cutN.hpp"
 #include "length.hpp"
 #include "revcomp.hpp"
 
@@ -31,17 +31,17 @@ int main(int argc, char* argv[])
         {
             return command_revcomp(argc, argv);
         }
-        else if(com == "fxsubseq")
+        else if(com == "subseq")
         {
-            return program_fxsubseq(argc, argv);
+            return program_subseq(argc, argv);
         }
         else if(com == "subsample")
         {
             return program_subsample(argc, argv);
         }
-        else if(com == "fa2contig")
+        else if(com == "cutN")
         {
-            return program_fa2contig(argc, argv);
+            return program_cutN(argc, argv);
         }
         else if(com == "length")
         {
@@ -68,7 +68,8 @@ void printHelp_core()
     fprintf(stderr, "     length       prints read ids and their length in tabular format\n");
     fprintf(stderr, "     format       re-formats the fasta/q file based on user's needs\n");
     fprintf(stderr, "     revcomp      prints the reverse complement of each sequence\n");
-    fprintf(stderr, "     fxsubseq     extracts a subsequence from the fasta/q file\n");
-    fprintf(stderr, "     fa2contig    breaks fasta entries into contigs (if containing N's)\n");
+    fprintf(stderr, "     subsample    output a fraction of reads depending on the desired coverage\n");
+    fprintf(stderr, "     subseq       extracts a subsequence from the fasta/q file\n");
+    fprintf(stderr, "     cutN         breaks fasta entries into contigs (if containing N's)\n");
     fprintf(stderr, "\n");
 }
