@@ -9,7 +9,8 @@ FILE         *_subsample_out_file;
 bool         _subsample_isFastq = false;
 bool         _subsample_noComment = true;
 int          _subsample_depth = 0;
-int          _subsample_genomeSize = 0;
+long long    _subsample_genomeSize = 0;
+string       _subsample_genomeSize_str = "";
 int          _subsample_mode = 0; // 0 top. 1 random. 2 longest
 int          _subsample_seed = 0;
 
@@ -19,15 +20,15 @@ void printHelp_subsample()
     fprintf(stderr, "Usage: fastutils subsample -i input -d depth -g genomeSize\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "I/O options:\n");
-    fprintf(stderr, "     -i,--in STR            input file in fasta/q format [required]\n");
+    fprintf(stderr, "     -i,--in STR            input file in fasta/q format. This options is required if -r or -l are used [stdin]\n");
     fprintf(stderr, "     -o,--out STR           output file [stdout]\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "More options:\n");
     fprintf(stderr, "     -d,--depth INT         coverage of the subsampled set [required]\n");
-    fprintf(stderr, "     -g,--genomeSize INT    length of the genome [required]\n");
+    fprintf(stderr, "     -g,--genomeSize FLT    length of the genome. Accepted suffixes are k,m,g [required]\n");
     fprintf(stderr, "     -r,--random            subsample randomly instead of selecting top reads\n");
+    fprintf(stderr, "     -l,--longest           subsample longest reads instead of selecting top reads\n");
     fprintf(stderr, "     -s,--seed INT          seed for random number generator\n");
-    fprintf(stderr, "     -l,--longest           output reads in fastq format if possible\n");
     fprintf(stderr, "     -q,--fastq             output reads in fastq format if possible\n");
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
     fprintf(stderr, "     -h,--help              print this help\n");
@@ -82,7 +83,7 @@ int parseCommandLine_subsample(int argc, char *argv[])
                 _subsample_depth = str2type<int>(optarg);
                 break;
             case 'g':
-                _subsample_genomeSize = str2type<int>(optarg);
+                _subsample_genomeSize_str = optarg;
                 break;
             case 'h':
                 printHelp_subsample();
@@ -102,16 +103,46 @@ int parseCommandLine_subsample(int argc, char *argv[])
         return 1;
     }
 
-    if(_subsample_genomeSize <= 0)
+    if(_subsample_genomeSize_str == "")
     {
         fprintf(stderr, "[ERROR] option -g/--genomeSize is required\n");
         fprintf(stderr, "\n");
         return 1;
     }
-
-    if(_subsample_in_path == "")
+    else
     {
-        fprintf(stderr, "[ERROR] option -i/--in is required\n");
+        istringstream sin(_subsample_genomeSize_str.c_str());
+        double genomeSize;
+        char suffix;
+        sin >> genomeSize;
+        if(!sin.eof())
+        {
+            sin >> suffix;
+            switch(suffix)
+            {
+                case 'k':
+                    _subsample_genomeSize = (long long) (genomeSize * 1000);
+                    break;
+                case 'm':
+                    _subsample_genomeSize = (long long) (genomeSize * 1000000);
+                    break;
+                case 'g':
+                    _subsample_genomeSize = (long long) (genomeSize * 1000000000);
+                    break;
+                default:
+                    fprintf(stderr, "[ERROR] unexpected suffix for -g/--genomeSize\n");
+                    return 1;
+            }
+        }
+        else
+        {
+            _subsample_genomeSize = (int)genomeSize;
+        }
+    }
+
+    if(_subsample_in_path == "" && (_subsample_mode == 1 || _subsample_mode == 2))
+    {
+        fprintf(stderr, "[ERROR] option -i/--in is required when using -r/--random or -l/--longest\n");
         fprintf(stderr, "\n");
         return 1;
     }
@@ -162,11 +193,26 @@ void printRead_subsample(FILE *fp, kseq_t *readSeq)
 
 void subsample_top()
 {
+    FILE *_subsample_in_file = NULL;
+    if(_subsample_in_path == "")
+    {
+        _subsample_in_file = stdin;
+    }
+    else
+    {
+        _subsample_in_file = fopen(_subsample_in_path.c_str(), "r");
+        if(_subsample_in_file == NULL)
+        {
+            fprintf(stderr, "[ERROR] could not open file: %s\n", _subsample_in_path.c_str());
+            exit(EXIT_FAILURE);
+        }
+    }
     long long blen = 0;
     long long bmax = (long long)_subsample_genomeSize * _subsample_depth;
     gzFile readFile;
     kseq_t *readSeq;
-    readFile = gzopen(_subsample_in_path.c_str(), "r");
+    // readFile = gzopen(_subsample_in_path.c_str(), "r");
+    readFile = gzdopen(fileno(_subsample_in_file), "r");
     if(readFile==NULL)
     {
         fprintf(stderr, "[ERROR] Cannot open file: %s\n", _subsample_in_path.c_str());
@@ -182,6 +228,15 @@ void subsample_top()
     }
     kseq_destroy(readSeq);
     gzclose(readFile);
+    
+    if(_subsample_in_path != "")
+    {
+        fclose(_subsample_in_file);
+    }
+    if(_subsample_out_path != "")
+    {
+        fclose(_subsample_out_file);
+    }
 }
 
 void subsample_random()
@@ -238,6 +293,11 @@ void subsample_random()
     }
     kseq_destroy(readSeq2);
     gzclose(readFile2);
+    
+    if(_subsample_out_path != "")
+    {
+        fclose(_subsample_out_file);
+    }
 }
 
 void subsample_longest()
@@ -292,6 +352,11 @@ void subsample_longest()
     }
     kseq_destroy(readSeq2);
     gzclose(readFile2);
+    
+    if(_subsample_out_path != "")
+    {
+        fclose(_subsample_out_file);
+    }
 }
 
 int program_subsample(int argc, char* argv[])
