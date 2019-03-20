@@ -6,6 +6,7 @@
 #include "cutN.hpp"
 #include "length.hpp"
 #include "revcomp.hpp"
+#include "interleave.hpp"
 
 void printHelp_core();
 
@@ -47,6 +48,10 @@ int main(int argc, char* argv[])
         {
             return command_length(argc, argv);
         }
+        else if(com == "interleave")
+        {
+            return command_interleave(argc, argv);
+        }
         else
         {
             printHelp_core();
@@ -67,6 +72,7 @@ void printHelp_core()
     fprintf(stderr, "     stat         prints general statistics of fasta/q files\n");
     fprintf(stderr, "     length       prints read ids and their length in tabular format\n");
     fprintf(stderr, "     format       re-formats the fasta/q file based on user's needs\n");
+    fprintf(stderr, "     interleave   generate interleave paired end reads\n");
     fprintf(stderr, "     revcomp      prints the reverse complement of each sequence\n");
     fprintf(stderr, "     subsample    output a fraction of reads depending on the desired coverage\n");
     fprintf(stderr, "     subseq       extracts a subsequence from the fasta/q file\n");
