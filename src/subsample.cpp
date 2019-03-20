@@ -121,12 +121,15 @@ int parseCommandLine_subsample(int argc, char *argv[])
             switch(suffix)
             {
                 case 'k':
+                case 'K':
                     _subsample_genomeSize = (long long) (genomeSize * 1000);
                     break;
                 case 'm':
+                case 'M':
                     _subsample_genomeSize = (long long) (genomeSize * 1000000);
                     break;
                 case 'g':
+                case 'G':
                     _subsample_genomeSize = (long long) (genomeSize * 1000000000);
                     break;
                 default:
