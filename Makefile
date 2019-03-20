@@ -1,4 +1,4 @@
-FASTUTILS_VERSION = "0.0.2"
+FASTUTILS_VERSION = $(shell cat VERSION)
 
 CXX      ?= g++
 CXXFLAGS  = -O2 -std=c++11 -DFASTUTILS_VERSION=\"$(FASTUTILS_VERSION)\"
@@ -6,7 +6,7 @@ LDFLAGS   = -lz
 
 all: clean-exe fastutils clean
 
-SOURCES   = $(wildcard *.cpp)
+SOURCES   = $(wildcard src/*.cpp)
 OBJECTS   = $(SOURCES:.cpp=.o)
 
 fastutils: $(OBJECTS)
@@ -17,3 +17,5 @@ clean:
 	
 clean-exe:
 	@rm -f fastutils
+	
+clean-all: clean clean-exe
