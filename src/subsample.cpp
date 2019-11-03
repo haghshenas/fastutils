@@ -139,7 +139,7 @@ int parseCommandLine_subsample(int argc, char *argv[])
         }
         else
         {
-            _subsample_genomeSize = (int)genomeSize;
+            _subsample_genomeSize = (long long)genomeSize;
         }
     }
 
