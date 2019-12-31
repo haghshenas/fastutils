@@ -37,7 +37,7 @@ void printHelp_format()
     fprintf(stderr, "     -n,--noN               do not print entries with N's\n");
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
     fprintf(stderr, "     -d,--digital           use read index instead as read name\n");
-    fprintf(stderr, "     -k,--name              print name as a comment when using -d\n");
+    fprintf(stderr, "     -k,--keep              keep  name as a comment when using -d\n");
     fprintf(stderr, "     -p,--prefix STR        prepend STR to the name\n");
     fprintf(stderr, "     -s,--suffix STR        append STR to the name\n");
     fprintf(stderr, "     -P,--pacbio            use pacbio's header format\n");
@@ -61,7 +61,7 @@ int parseCommandLine_format(int argc, char *argv[])
         {"comment",     no_argument,            0,      'c' },
         {"pacbio",      no_argument,            0,      'P' },
         {"digital",     no_argument,            0,      'd' },
-        {"name",        no_argument,            0,      'k' },
+        {"keep",        no_argument,            0,      'k' },
         {"prefix",      required_argument,      0,      'p' },
         {"suffix",      required_argument,      0,      's' },
         {"help",        no_argument,            0,      'h' },

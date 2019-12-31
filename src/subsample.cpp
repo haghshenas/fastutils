@@ -3,8 +3,8 @@
 #include "kseq.h"
 KSEQ_INIT(gzFile, gzread)
 
-string       _subsample_in_path          = "";
-string       _subsample_out_path         = "";
+string       _subsample_in_path = "";
+string       _subsample_out_path = "";
 FILE         *_subsample_out_file;
 bool         _subsample_isFastq = false;
 bool         _subsample_noComment = true;
@@ -13,6 +13,8 @@ long long    _subsample_genomeSize = 0;
 string       _subsample_genomeSize_str = "";
 int          _subsample_mode = 0; // 0 top. 1 random. 2 longest
 int          _subsample_seed = 0;
+bool         _subsample_digital = true;
+bool         _subsample_keepName = false;
 
 void printHelp_subsample()
 {
@@ -31,6 +33,8 @@ void printHelp_subsample()
     fprintf(stderr, "     -s,--seed INT          seed for random number generator\n");
     fprintf(stderr, "     -q,--fastq             output reads in fastq format if possible\n");
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
+    fprintf(stderr, "     -n,--num               use read index instead of read name\n");
+    fprintf(stderr, "     -k,--keep              keep name as a comment when using -n\n");
     fprintf(stderr, "     -h,--help              print this help\n");
     fprintf(stderr, "\n");
 }
@@ -50,11 +54,13 @@ int parseCommandLine_subsample(int argc, char *argv[])
         {"longest",     no_argument,            0,      'l' },
         {"fastq",       no_argument,            0,      'q' },
         {"comment",     no_argument,            0,      'c' },
+        {"num",         no_argument,            0,      'n' },
+        {"keep",        no_argument,            0,      'k' },
         {"help",        no_argument,            0,      'h' },
         {0,0,0,0}
     };
 
-    while ( (c = getopt_long ( argc, argv, "i:o:d:g:s:rlqch", longOptions, &index))!= -1 )
+    while ( (c = getopt_long ( argc, argv, "i:o:d:g:s:rlqcnkh", longOptions, &index))!= -1 )
     {
         switch (c)
         {
@@ -75,6 +81,12 @@ int parseCommandLine_subsample(int argc, char *argv[])
                 break;
             case 'c':
                 _subsample_noComment = false;
+                break;
+            case 'n':
+                _subsample_digital = true;
+                break;
+            case 'k':
+                _subsample_keepName = true;
                 break;
             case 's':
                 _subsample_seed = str2type<int>(optarg);
@@ -168,13 +180,18 @@ int parseCommandLine_subsample(int argc, char *argv[])
     return 0;
 }
 
-void printRead_subsample(FILE *fp, kseq_t *readSeq)
+void printRead_subsample(FILE *fp, kseq_t *readSeq, unsigned long long num)
 {
     int tmpPos;
     string tmpStr;
     if(_subsample_isFastq && readSeq->qual.l>0)
     {
-        fprintf(fp, "@%s", readSeq->name.s);
+        if(_subsample_digital)
+            fprintf(fp, "@%llu", num);
+        else
+            fprintf(fp, "@%s", readSeq->name.s);
+        if(_subsample_digital && _subsample_keepName)
+            fprintf(fp, " %s", readSeq->name.s);
         if(_subsample_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
@@ -185,7 +202,12 @@ void printRead_subsample(FILE *fp, kseq_t *readSeq)
     }
     else
     {
-        fprintf(fp, ">%s", readSeq->name.s);
+        if(_subsample_digital)
+            fprintf(fp, ">%llu", num);
+        else
+            fprintf(fp, ">%s", readSeq->name.s);
+        if(_subsample_digital && _subsample_keepName)
+            fprintf(fp, " %s", readSeq->name.s);
         if(_subsample_noComment==false && readSeq->comment.l > 0)
             fprintf(fp, " %s\n", readSeq->comment.s);
         else
@@ -222,9 +244,11 @@ void subsample_top()
         exit(EXIT_FAILURE);
     }
     readSeq = kseq_init(readFile);
+    unsigned long long numPrinted = 0;
     while (kseq_read(readSeq) >= 0)
     {
-        printRead_subsample(_subsample_out_file, readSeq);
+        printRead_subsample(_subsample_out_file, readSeq, numPrinted);
+        numPrinted++;
         blen += readSeq->seq.l;
         if(blen >= bmax)
             break;
@@ -287,11 +311,15 @@ void subsample_random()
         exit(EXIT_FAILURE);
     }
     int cnt = 0;
+    unsigned long long numPrinted = 0;
     readSeq2 = kseq_init(readFile2);
     while (kseq_read(readSeq2) >= 0)
     {
         if(selected_index.count(cnt) > 0)
-            printRead_subsample(_subsample_out_file, readSeq2);
+        {
+            printRead_subsample(_subsample_out_file, readSeq2, numPrinted);
+            numPrinted++;
+        }
         cnt++;
     }
     kseq_destroy(readSeq2);
@@ -346,11 +374,15 @@ void subsample_longest()
         exit(EXIT_FAILURE);
     }
     cnt = 0;
+    unsigned long long numPrinted = 0;
     readSeq2 = kseq_init(readFile2);
     while (kseq_read(readSeq2) >= 0)
     {
         if(selected_index.count(cnt) > 0)
-            printRead_subsample(_subsample_out_file, readSeq2);
+        {
+            printRead_subsample(_subsample_out_file, readSeq2, numPrinted);
+            numPrinted++;
+        }
         cnt++;
     }
     kseq_destroy(readSeq2);
