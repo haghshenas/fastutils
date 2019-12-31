@@ -20,7 +20,12 @@ int main(int argc, char* argv[])
     else
     {
         string com = argv[1];
-        if(com == "stat")
+        if(com == "-h" || com == "--help")
+        {
+            printHelp_core();
+            return EXIT_SUCCESS;
+        }
+        else if(com == "stat")
         {
             return command_stat(argc, argv);
         }
