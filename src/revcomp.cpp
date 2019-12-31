@@ -162,8 +162,8 @@ void printRead_revcomp(FILE *fp, kseq_t *readSeq)
     {
         string rev_seq;
         revComplement(rev_seq, readSeq->seq.s);
-        string rev_qual;
-        revString(rev_qual, readSeq->qual.s);
+        // string rev_qual;
+        // revString(rev_qual, readSeq->qual.s);
         if(_revcomp_lex)
         {
             fprintf(fp, ">%s", readSeq->name.s);
