@@ -13,7 +13,7 @@ long long    _subsample_genomeSize = 0;
 string       _subsample_genomeSize_str = "";
 int          _subsample_mode = 0; // 0 top. 1 random. 2 longest
 int          _subsample_seed = 0;
-bool         _subsample_digital = true;
+bool         _subsample_digital = false;
 bool         _subsample_keepName = false;
 
 void printHelp_subsample()
