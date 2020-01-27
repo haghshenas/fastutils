@@ -16,6 +16,7 @@ For details about each command enter `fastutils <command> -h`.
 
 ## Command details
 ### fastutils stat
+Reports the number of reads, number of bases, and base composition of the input FASTA/Q file.
 ```
 Usage: fastutils stat [options]
 
@@ -30,6 +31,7 @@ More options:
 ```
 
 ### fastutils length
+Prints the name and length of each read (separated by tab), one read per line.
 ```
 Usage: fastutils length [options]
 
@@ -45,6 +47,7 @@ More options:
 ```
 
 ### fastutils format
+Change the format of the input file.
 ```
 Usage: fastutils format [options]
 
@@ -68,6 +71,7 @@ More options:
 ```
 
 ### fastutils interleave
+Takes two fasta/q files of one or multiple paired-end/mate-pair library and print the sequences in interleaved/interlaced format.
 ```
 Usage: fastutils interleave [options] -1 lib1_1.fq -2 lib1_2.fq [-1 lib2_1.fq -2 lib2_2.fq ...]
 
@@ -82,6 +86,7 @@ More options:
 ```
 
 ### fastutils revcomp
+Print the reverse complement of the sequences contained in the input.
 ```
 Usage: fastutils revcomp [options]
 
@@ -98,6 +103,7 @@ More options:
 ```
 
 ### fastutils subsample
+Downsamples the input file to a desired depth of coverage. User can choose to select random reads, longest reads, or from top (default).
 ```
 Usage: fastutils subsample -i input -d depth -g genomeSize
 
@@ -119,6 +125,7 @@ More options:
 ```
 
 ### fastutils subseq
+Extracts desired sequences or subsequences.
 ```
 Usage: fastutils subseq [options] <name:start-end> [<name2:start2-end2> ...]
 
@@ -132,6 +139,7 @@ More options:
 ```
 
 ### fastutils cutN
+Cuts fasta entries at N bases. This is useful for converting scaffolds to contigs.
 ```
 Usage: fastutils cutN [options]
 
