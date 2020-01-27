@@ -1,7 +1,23 @@
 # fastutils
+
+- [Introduction](#about)
+- [Available commands](#commands)
+- [Command details](#details)
+  - [fastutils stat](#stat)
+  - [fastutils length](#length)
+  - [fastutils format](#format)
+  - [fastutils interleave](#interleave)
+  - [fastutils revcomp](#revcomp)
+  - [fastutils subsample](#subsample)
+  - [fastutils subseq](#subseq)
+  - [fastutils cutN](#cutn)
+- [Bug report](#bugs)
+- [Copyright and License](#license)
+
+## <a name="about"></a>Introduction
 fastutils is a light toolkit for parsing, manipulating and analysis of FASTA and FASTQ files.
 
-## Available commands
+## <a name="commands"></a>Available commands
 ```
 stat         prints general statistics of fasta/q files
 length       prints read ids and their length in tabular format
@@ -14,8 +30,8 @@ cutN         breaks fasta entries into contigs (if containing N's)
 ```
 For details about each command enter `fastutils <command> -h`.
 
-## Command details
-### fastutils stat
+## <a name="details"></a>Command details
+### <a name="stat"></a>fastutils stat
 Reports the number of reads, number of bases, and base composition of the input FASTA/Q file.
 ```
 Usage: fastutils stat [options]
@@ -30,7 +46,7 @@ More options:
      -h,--help           print this help
 ```
 
-### fastutils length
+### <a name="length"></a>fastutils length
 Prints the name and length of each read (separated by tab), one read per line.
 ```
 Usage: fastutils length [options]
@@ -46,7 +62,7 @@ More options:
      -h,--help              print this help
 ```
 
-### fastutils format
+### <a name="format"></a>fastutils format
 Change the format of the input file.
 ```
 Usage: fastutils format [options]
@@ -70,7 +86,7 @@ More options:
      -h,--help              print this help
 ```
 
-### fastutils interleave
+### <a name="interleave"></a>fastutils interleave
 Takes two fasta/q files of one or multiple paired-end/mate-pair library and print the sequences in interleaved/interlaced format.
 ```
 Usage: fastutils interleave [options] -1 lib1_1.fq -2 lib1_2.fq [-1 lib2_1.fq -2 lib2_2.fq ...]
@@ -85,7 +101,7 @@ More options:
      -h,--help              print this help
 ```
 
-### fastutils revcomp
+### <a name="revcomp"></a>fastutils revcomp
 Print the reverse complement of the sequences contained in the input.
 ```
 Usage: fastutils revcomp [options]
@@ -102,7 +118,7 @@ More options:
      -h,--help              print this help
 ```
 
-### fastutils subsample
+### <a name="subsample"></a>fastutils subsample
 Downsamples the input file to a desired depth of coverage. User can choose to select random reads, longest reads, or from top (default).
 ```
 Usage: fastutils subsample -i input -d depth -g genomeSize
@@ -124,7 +140,7 @@ More options:
      -h,--help              print this help
 ```
 
-### fastutils subseq
+### <a name="subseq"></a>fastutils subseq
 Extracts desired sequences or subsequences.
 ```
 Usage: fastutils subseq [options] <name:start-end> [<name2:start2-end2> ...]
@@ -138,7 +154,7 @@ More options:
          -h            print this help
 ```
 
-### fastutils cutN
+### <a name="cutn"></a>fastutils cutN
 Cuts fasta entries at N bases. This is useful for converting scaffolds to contigs.
 ```
 Usage: fastutils cutN [options]
@@ -151,3 +167,10 @@ More options:
          -v            print version and build date
          -h            print this help
 ```
+
+## <a name="bugs"></a>Bug report
+Please report the bugs through issue tracker at [https://github.com/haghshenas/fastutils/issues](https://github.com/haghshenas/fastutils/issues).
+
+## <a name="license"></a>Copyright and License
+This software is released under GNU General Public License (v3.0)
+
