@@ -4,7 +4,8 @@ CXX      ?= g++
 CXXFLAGS  = -O2 -std=c++11 -DFASTUTILS_VERSION=\"$(FASTUTILS_VERSION)\"
 LDFLAGS   = -lz
 
-all: clean-exe fastutils clean
+# all: clean-exe fastutils clean
+all: fastutils
 
 SOURCES   = $(wildcard src/*.cpp)
 OBJECTS   = $(SOURCES:.cpp=.o)
