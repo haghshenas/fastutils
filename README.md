@@ -1,6 +1,6 @@
 # fastutils
 
-- [Introduction](#about)
+- [Quick start](#start)
 - [Available commands](#commands)
 - [Command details](#details)
   - [fastutils stat](#stat)
@@ -14,8 +14,27 @@
 - [Bug report](#bugs)
 - [Copyright and License](#license)
 
-## <a name="about"></a>Introduction
-fastutils is a light toolkit for parsing, manipulating and analysis of FASTA and FASTQ files.
+## <a name="start"></a>Quick start
+```
+# check number of reads, number of bases, and base composition of a fasta/q file
+fastutils stat -i reads.fastq
+# check mean read length
+fastutils length -i reads.fastq | datamash mean 1
+# convert fastq to fasta
+fastutils format -i reads.fastq > reads.fasta
+# print reads longer than 1000 bp and format in lines of length 60 bp
+fastutils format -i reads.fastq -m 1000 -w 60 > reads.1000.fasta
+# interleave paired-end dataset
+fastutils interleave -1 reads_1.fastq -2 reads_2.fastq -q > reads.fastq
+# subsample 25x coverage of reads randomly (assuming E.coli dataset)
+fastutils subsample -i reads.fastq -d 25 -g 4.6m -r > reads.subsample.fasta
+# print first 1 million bp of chr1 and format in lines of length 60 bp
+fastutils subseq -i hg38.fa -o - chr1:0-1000000 | fastutils format -w 60 > chr1.chunk.fasta
+# compare each sequences with its reverse complement and print lexicographically smaller one
+fastutils revcomp -i reads.fastq -l > reads.lex.fasta
+# piping example; Get all contigs of chrX
+cat hg38.fa | fastutils format | grep ">chrX" -A1 | fastutils cutN -i - > chrX.contigs.fa
+```
 
 ## <a name="commands"></a>Available commands
 ```
@@ -141,7 +160,7 @@ More options:
 ```
 
 ### <a name="subseq"></a>fastutils subseq
-Extracts desired sequences or subsequences.
+Extracts desired subsequences from input file.
 ```
 Usage: fastutils subseq [options] <name:start-end> [<name2:start2-end2> ...]
 
