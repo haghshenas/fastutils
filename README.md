@@ -15,7 +15,7 @@
 - [Copyright and License](#license)
 
 ## <a name="start"></a>Quick start
-```
+```bash
 # check number of reads, number of bases, and base composition of a fasta/q file
 fastutils stat -i reads.fastq
 # check mean read length
