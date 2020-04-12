@@ -19,6 +19,7 @@ bool        _format_pacbio      = false;
 bool        _format_digital     = false;
 string      _format_prefix      = "";
 string      _format_suffix      = "";
+bool        _format_fofn        = false;
 
 void printHelp_format()
 {
@@ -37,10 +38,11 @@ void printHelp_format()
     fprintf(stderr, "     -n,--noN               do not print entries with N's\n");
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
     fprintf(stderr, "     -d,--digital           use read index instead as read name\n");
-    fprintf(stderr, "     -k,--keep              keep  name as a comment when using -d\n");
+    fprintf(stderr, "     -k,--keep              keep name as a comment when using -d\n");
     fprintf(stderr, "     -p,--prefix STR        prepend STR to the name\n");
     fprintf(stderr, "     -s,--suffix STR        append STR to the name\n");
     fprintf(stderr, "     -P,--pacbio            use pacbio's header format\n");
+    fprintf(stderr, "     -f,--fofn              input file is a file of file names\n");
     fprintf(stderr, "     -h,--help              print this help\n");
     fprintf(stderr, "\n");
 }
@@ -64,6 +66,7 @@ int parseCommandLine_format(int argc, char *argv[])
         {"keep",        no_argument,            0,      'k' },
         {"prefix",      required_argument,      0,      'p' },
         {"suffix",      required_argument,      0,      's' },
+        {"fofn",        no_argument,            0,      'f' },
         {"help",        no_argument,            0,      'h' },
         {0,0,0,0}
     };
@@ -110,6 +113,9 @@ int parseCommandLine_format(int argc, char *argv[])
                 break;
             case 's':
                 _format_suffix = optarg;
+                break;
+            case 'f':
+                _format_fofn = true;
                 break;
             case 'h':
                 printHelp_format();
@@ -230,13 +236,8 @@ bool hasNoN(string r)
     return (r.find('n')==string::npos && r.find('N')==string::npos);
 }
 
-int command_format(int argc, char* argv[])
+void do_format()
 {
-    if(parseCommandLine_format(argc, argv))
-    {
-        return EXIT_FAILURE;
-    }
-
     gzFile readFile;
     ostringstream sout;
     kseq_t *readSeq;
@@ -267,6 +268,63 @@ int command_format(int argc, char* argv[])
     {
         fclose(_format_out_file);
     }
+}
+
+void do_format_fofn()
+{
+    ifstream fin(_format_in_path.c_str());
+    if(fin.is_open() == false)
+    {
+        fprintf(stderr, "[ERROR] Cannot open file: %s\n", _format_in_path.c_str());
+        exit(EXIT_FAILURE);
+    }
+    unsigned long long cnt = 0;
+    string line;
+    while(fin >> line)
+    {
+        gzFile readFile;
+        ostringstream sout;
+        kseq_t *readSeq;
+        readFile = gzopen(line.c_str(), "r");
+        if(readFile==NULL)
+        {
+            fprintf(stderr, "[ERROR] Cannot open file: %s\n", line.c_str());
+            exit(EXIT_FAILURE);
+        }
+        
+        readSeq = kseq_init(readFile);
+        while (kseq_read(readSeq) >= 0)
+        {
+            if( ((!_format_noN) || (_format_noN && hasNoN(readSeq->seq.s))) &&
+                readSeq->seq.l >= _format_minLen && 
+                readSeq->seq.l <= _format_maxLen )
+            {
+                // cnt++;
+                printRead_format(_format_out_file, readSeq, cnt);
+                cnt++;
+            }
+        }
+        kseq_destroy(readSeq);
+        gzclose(readFile);
+    }
+    fin.close();
+    if(_format_out_path != "")
+    {
+        fclose(_format_out_file);
+    }
+}
+
+int command_format(int argc, char* argv[])
+{
+    if(parseCommandLine_format(argc, argv))
+    {
+        return EXIT_FAILURE;
+    }
+
+    if(_format_fofn == true)
+        do_format_fofn();
+    else
+        do_format();
 
     return EXIT_SUCCESS;
 }
