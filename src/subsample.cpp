@@ -15,6 +15,7 @@ int          _subsample_mode = 0; // 0 top. 1 random. 2 longest
 int          _subsample_seed = 0;
 bool         _subsample_digital = false;
 bool         _subsample_keepName = false;
+bool         _subsample_fofn = false;
 
 void printHelp_subsample()
 {
@@ -35,6 +36,7 @@ void printHelp_subsample()
     fprintf(stderr, "     -c,--comment           print comments in headers\n");
     fprintf(stderr, "     -n,--num               use read index instead of read name\n");
     fprintf(stderr, "     -k,--keep              keep name as a comment when using -n\n");
+    fprintf(stderr, "     -f,--fofn              input file is a file of file names\n");
     fprintf(stderr, "     -h,--help              print this help\n");
     fprintf(stderr, "\n");
 }
@@ -56,11 +58,12 @@ int parseCommandLine_subsample(int argc, char *argv[])
         {"comment",     no_argument,            0,      'c' },
         {"num",         no_argument,            0,      'n' },
         {"keep",        no_argument,            0,      'k' },
+        {"fofn",        no_argument,            0,      'f' },
         {"help",        no_argument,            0,      'h' },
         {0,0,0,0}
     };
 
-    while ( (c = getopt_long ( argc, argv, "i:o:d:g:s:rlqcnkh", longOptions, &index))!= -1 )
+    while ( (c = getopt_long ( argc, argv, "i:o:d:g:s:rlqcnkfh", longOptions, &index))!= -1 )
     {
         switch (c)
         {
@@ -87,6 +90,9 @@ int parseCommandLine_subsample(int argc, char *argv[])
                 break;
             case 'k':
                 _subsample_keepName = true;
+                break;
+            case 'f':
+                _subsample_fofn = true;
                 break;
             case 's':
                 _subsample_seed = str2type<int>(optarg);
@@ -394,6 +400,81 @@ void subsample_longest()
     }
 }
 
+void subsample_longest_fofn()
+{
+    vector<pair<int, long> > read_lens;
+    // 1st pass
+    ifstream fin(_subsample_in_path.c_str());
+    if(fin.is_open() == false)
+    {
+        fprintf(stderr, "[ERROR] Cannot open file: %s\n", _subsample_in_path.c_str());
+        exit(EXIT_FAILURE);
+    }
+    string line;
+    long cnt = 0;
+    while(fin >> line)
+    {
+        gzFile readFile = gzopen(line.c_str(), "r");
+        if(readFile==NULL)
+        {
+            fprintf(stderr, "[ERROR] Cannot open file: %s\n", line.c_str());
+            exit(EXIT_FAILURE);
+        }
+        kseq_t *readSeq = kseq_init(readFile);
+        while(kseq_read(readSeq) >= 0)
+        {
+            read_lens.push_back(make_pair(readSeq->seq.l, cnt));
+            cnt++;
+        }
+        kseq_destroy(readSeq);
+        gzclose(readFile);
+    }
+    // select
+    sort(read_lens.begin(), read_lens.end(), greater<pair<int, long> >());
+    long long blen = 0;
+    long long bmax = (long long)_subsample_genomeSize * _subsample_depth;
+    unordered_set<long> selected_index;
+    for(int i = 0; i < read_lens.size(); i++)
+    {
+        selected_index.insert(read_lens[i].second);
+        blen += read_lens[i].first;
+        if(blen >= bmax)
+            break;
+    }
+    // 2nd pass
+    fin.clear();
+    fin.seekg(0, fin.beg);
+    cnt = 0;
+    unsigned long long numPrinted = 0;
+    while(fin >> line)
+    {
+        gzFile readFile2 = gzopen(line.c_str(), "r");
+        if(readFile2==NULL)
+        {
+            fprintf(stderr, "[ERROR] Cannot open file: %s\n", line.c_str());
+            exit(EXIT_FAILURE);
+        }
+        kseq_t *readSeq2 = kseq_init(readFile2);
+        while(kseq_read(readSeq2) >= 0)
+        {
+            if(selected_index.count(cnt) > 0)
+            {
+                printRead_subsample(_subsample_out_file, readSeq2, numPrinted);
+                numPrinted++;
+            }
+            cnt++;
+        }
+        kseq_destroy(readSeq2);
+        gzclose(readFile2);
+    }
+    fin.close();
+    // 
+    if(_subsample_out_path != "")
+    {
+        fclose(_subsample_out_file);
+    }
+}
+
 int program_subsample(int argc, char* argv[])
 {
     if(argc < 3)
@@ -409,12 +490,24 @@ int program_subsample(int argc, char* argv[])
 
     srand(_subsample_seed);
 
-    if(_subsample_mode == 1)
-        subsample_random();
-    else if(_subsample_mode == 2)
-        subsample_longest();
+    if(_subsample_fofn == true)
+    {
+        if(_subsample_mode == 1)
+            subsample_random();
+        else if(_subsample_mode == 2)
+            subsample_longest_fofn();
+        else
+            subsample_top();
+    }
     else
-        subsample_top();
+    {
+        if(_subsample_mode == 1)
+            subsample_random();
+        else if(_subsample_mode == 2)
+            subsample_longest();
+        else
+            subsample_top();
+    }
 
     // ostream &outObj = *_subsample_out_pointer;
 
